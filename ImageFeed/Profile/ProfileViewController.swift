@@ -17,9 +17,11 @@ final class ProfileViewController: UIViewController {
         avatarImageView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(avatarImageView)
         
-        let exitIconView = UIImageView(image: UIImage(named: "Exit"))
-        exitIconView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(exitIconView)
+        let exitButton = UIButton(type: .system)
+        exitButton.setImage(UIImage(named: "Exit"), for: .normal)
+        exitButton.tintColor = .ypRed
+        exitButton.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(exitButton)
 
         let nameLabel = UILabel()
         nameLabel.text = "Екатерина Новикова"
@@ -48,10 +50,10 @@ final class ProfileViewController: UIViewController {
             avatarImageView.widthAnchor.constraint(equalToConstant: 70),
             avatarImageView.heightAnchor.constraint(equalToConstant: 70),
 
-            exitIconView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            exitIconView.centerYAnchor.constraint(equalTo: avatarImageView.centerYAnchor),
-            exitIconView.widthAnchor.constraint(equalToConstant: 24),
-            exitIconView.heightAnchor.constraint(equalToConstant: 24),
+            exitButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            exitButton.centerYAnchor.constraint(equalTo: avatarImageView.centerYAnchor),
+            exitButton.widthAnchor.constraint(equalToConstant: 24),
+            exitButton.heightAnchor.constraint(equalToConstant: 24),
 
             nameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             nameLabel.topAnchor.constraint(equalTo: avatarImageView.bottomAnchor, constant: 8),
