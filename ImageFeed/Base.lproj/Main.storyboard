@@ -30,6 +30,54 @@
             </objects>
             <point key="canvasLocation" x="-1486" y="358"/>
         </scene>
+        <!--View Controller-->
+        <scene sceneID="Q4m-Xl-bAV">
+            <objects>
+                <viewController id="bx5-lP-aFz" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="zPZ-N0-Rbx">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="AuthScreenLogo" translatesAutoresizingMaskIntoConstraints="NO" id="efL-Vp-9qQ">
+                                <rect key="frame" x="177" y="432" width="60" height="60"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="60" id="LPR-n0-E3a"/>
+                                    <constraint firstAttribute="width" constant="60" id="mwt-ab-Wkq"/>
+                                </constraints>
+                            </imageView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xgE-Mw-6tc">
+                                <rect key="frame" x="16" y="656" width="382" height="48"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="48" id="ajG-4T-pyx"/>
+                                </constraints>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="filled" title="Войти">
+                                    <color key="baseForegroundColor" name="YP Black"/>
+                                    <color key="baseBackgroundColor" name="YP White"/>
+                                </buttonConfiguration>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="16"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                                </userDefinedRuntimeAttributes>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="cpV-QZ-fgn"/>
+                        <color key="backgroundColor" name="YP Black"/>
+                        <constraints>
+                            <constraint firstItem="xgE-Mw-6tc" firstAttribute="leading" secondItem="cpV-QZ-fgn" secondAttribute="leading" constant="16" id="1On-9s-XHu"/>
+                            <constraint firstItem="efL-Vp-9qQ" firstAttribute="centerY" secondItem="cpV-QZ-fgn" secondAttribute="centerY" id="2PT-3p-6Bj"/>
+                            <constraint firstItem="cpV-QZ-fgn" firstAttribute="trailing" secondItem="xgE-Mw-6tc" secondAttribute="trailing" constant="16" id="KaK-mF-S1v"/>
+                            <constraint firstItem="efL-Vp-9qQ" firstAttribute="centerX" secondItem="cpV-QZ-fgn" secondAttribute="centerX" id="buB-DZ-ioK"/>
+                            <constraint firstAttribute="bottomMargin" secondItem="xgE-Mw-6tc" secondAttribute="bottom" constant="124" id="wed-dt-SJc"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="rgt-Pp-Gdi" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1400" y="1078.7946428571429"/>
+        </scene>
         <!--ImageList-->
         <scene sceneID="tne-QT-ifu">
             <objects>
@@ -210,6 +258,7 @@
     <resources>
         <image name="#1A1B22" width="128" height="128"/>
         <image name="0" width="1600" height="1059"/>
+        <image name="AuthScreenLogo" width="60" height="60"/>
         <image name="backward" width="24" height="24"/>
         <image name="like_btn_active" width="44" height="44"/>
         <image name="main_active" width="30" height="30"/>

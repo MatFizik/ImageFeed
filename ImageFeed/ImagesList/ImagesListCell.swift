@@ -8,6 +8,11 @@
 import UIKit
 
 final class ImagesListCell: UITableViewCell {
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        selectionStyle = .none
+    }
+    
     static let reuseIdentifier = "ImagesListCell"
     
     
