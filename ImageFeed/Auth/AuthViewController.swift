@@ -7,13 +7,15 @@
 
 import UIKit
 
-enum AuthViewConstants {
-    static let tokenURL = "https://unsplash.com/oauth/token"
+protocol AuthViewControllerDelegate: AnyObject {
+    func didAuthenticate(_ vc: AuthViewController)
 }
 
 final class AuthViewController: UIViewController {
     private let showWebViewSegueIdentifier = "ShowWebView"
     private let oauthService = OAuth2Service.shared
+    
+    weak var delegate: AuthViewControllerDelegate?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,7 +47,18 @@ final class AuthViewController: UIViewController {
 
 extension AuthViewController: WebViewViewControllerDelegate {
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
-        oauthService.fetchOAuthToken(code: code)
+        vc.dismiss(animated: true)
+        oauthService.fetchOAuthToken(code: code) {[weak self] result in
+            guard let self = self else { return }
+            
+            switch result {
+            case .success:
+                self.delegate?.didAuthenticate(self)
+            case .failure:
+                // обработка ошибки
+                break
+                }
+            }
     }
 
     func webViewViewControllerDidCancel(_ vc: WebViewViewController) {

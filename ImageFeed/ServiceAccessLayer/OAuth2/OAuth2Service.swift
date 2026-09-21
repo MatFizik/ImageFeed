@@ -7,20 +7,18 @@
 
 import Foundation
 
+enum OAuth2Constants {
+    static let tokenURL = "https://unsplash.com/oauth/token"
+}
+
 final class OAuth2Service {
     static let shared = OAuth2Service()
     private let decoder = JSONDecoder()
-    
-    private let storage: UserDefaults = .standard
-    
-    var accessToken: String? {
-        get { storage.string(forKey: "access_token") }
-        set { storage.set(newValue, forKey: "access_token") }
-    }
+    private let storage = OAuth2TokenStorage()
     
     private init() {}
     
-    func fetchOAuthToken(code: String) {
+    func fetchOAuthToken(code: String, completion: @escaping (Result<String, Error>) -> Void) {
         guard let urlRequest = makeTokenRequest(code: code) else { return }
         
         let task = URLSession.shared.data(for: urlRequest) { result in
@@ -28,20 +26,23 @@ final class OAuth2Service {
             case .success(let data):
                 do {
                     let token = try self.decoder.decode(OAuthTokenResponseBody.self, from: data)
-                    self.accessToken = token.access_token
+                    self.storage.accessToken = token.access_token
+                    completion(.success(token.access_token))
                 }
                 catch {
                     print("Decode error: \(error)")
+                    completion(.failure(error))
                 }
             case .failure(let error):
-            print("Network error: \(error)")
+                print("Network error: \(error)")
+                completion(.failure(error))
             }
         }
         task.resume()
     }
     
     private func makeTokenRequest(code: String) -> URLRequest? {
-        guard var urlComponents = URLComponents(string: AuthViewConstants.tokenURL) else {
+        guard var urlComponents = URLComponents(string: OAuth2Constants.tokenURL) else {
            return nil
         }
         urlComponents.queryItems = [
@@ -58,6 +59,4 @@ final class OAuth2Service {
         request.httpMethod = "POST"
         return request
     }
-    
-    
 }
