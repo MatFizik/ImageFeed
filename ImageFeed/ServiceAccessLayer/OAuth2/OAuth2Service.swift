@@ -13,7 +13,7 @@ enum OAuth2Constants {
 
 final class OAuth2Service {
     static let shared = OAuth2Service()
-    private let storage = OAuth2TokenStorage()
+    private let storage = OAuth2TokenStorage.shared
     
     private var task: URLSessionTask?
     
@@ -48,28 +48,27 @@ final class OAuth2Service {
             return
         }
         
-        let task = URLSession.shared.data(for: request) { [weak self] result in
+        let task = URLSession.shared.objectTask(for: request) { [weak self] (result:
+            Result<OAuthTokenResponseBody, Error>) in
+            
             DispatchQueue.main.async {
+                UIBlockingProgressHUD.dismiss()
+                
+                guard let self = self else { return }
                 
                 switch result {
-                case .success(let data):
-                    do {
-                        let token = try self?.decoder.decode(OAuthTokenResponseBody.self, from: data)
-                        guard let token = token else { return }
-                        self?.storage.accessToken = token.access_token
-                        completion(.success(token.access_token))
-                    }
-                    catch {
-                        print("Decode error: \(error)")
-                        completion(.failure(error))
-                    }
+                case .success(let body):
+                    let accessToken = body.accessToken
+                    self.storage.accessToken = accessToken
+                    completion(.success(accessToken))
+                    
                 case .failure(let error):
                     print("Network error: \(error)")
                     completion(.failure(error))
                 }
                 
-                self?.task = nil
-                self?.lastCode = nil
+                self.task = nil
+                self.lastCode = nil
             }
         }
         self.task = task

@@ -9,7 +9,7 @@ import Foundation
 
 final class ProfileService {
     static var shared = ProfileService()
-    private let tokenStorage = OAuth2TokenStorage()
+    private let tokenStorage = OAuth2TokenStorage.shared
     
     private var task: URLSessionTask?
     
@@ -28,23 +28,18 @@ final class ProfileService {
             return
         }
         
-        let task = URLSession.shared.data(for: request) {[weak self] result in
+        let task = URLSession.shared.objectTask(for: request) { [weak self] (result:
+                                                                                Result<ProfileResponseModel, Error>) in
+            
             switch result {
             case .success(let data):
-                do{
-                    guard let profileData = try self?.decoder.decode(ProfileResponseModel.self, from: data) else {
-                        return
-                    }
-                    guard let profileViewData = self?.convert(model: profileData) else {return}
-                    self?.profileViewModel = profileViewData
-                    completion(.success(profileViewData))
-                } catch {
-                    completion(.failure(NetworkError.decodingError(error)))
-                }
+                guard let profileViewData = self?.convert(model: data) else {return}
+                self?.profileViewModel = profileViewData
+                completion(.success(profileViewData))
             case .failure(let error):
                 completion(.failure(error))
             }
-        self?.task = nil
+            self?.task = nil
         }
         self.task = task
         task.resume()

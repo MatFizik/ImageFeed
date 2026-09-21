@@ -12,6 +12,8 @@ final class ProfileViewController: UIViewController {
     
     var profileViewModel: ProfileViewModel?
     
+    private var profileImageServiceObserver: NSObjectProtocol?
+    
     private lazy var nameLabel: UILabel = {
         let nameLabel = UILabel()
         nameLabel.font = .systemFont(ofSize: 23, weight: .bold)
@@ -52,7 +54,26 @@ final class ProfileViewController: UIViewController {
         requestForProfile()
         addSubviews()
         setupConstraints()
+        
+        profileImageServiceObserver = NotificationCenter.default
+            .addObserver(
+                forName: ProfileImageService.didChangeNotification,
+                object: nil,
+                queue: .main
+            ) { [weak self] _ in
+                guard let self = self else { return }
+                self.updateAvatar()
+            }
+        updateAvatar()
     }
+
+    private func updateAvatar() {
+        guard
+            let profileImageURL = ProfileImageService.shared.avatarURL,
+            let url = URL(string: profileImageURL)
+        else { return }
+    }
+       
     
     private func requestForProfile() {
         if let profile = ProfileService.shared.profileViewModel {

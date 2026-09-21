@@ -21,15 +21,18 @@ struct ProfileImage: Codable {
 
 struct UserResult: Codable {
     let profileImage: ProfileImage
-    
-    enum CodingKeys: String, CodingKey {
+
+    private enum CodingKeys: String, CodingKey {
         case profileImage = "profile_image"
     }
 }
+
 final class ProfileImageService {
     // Синглтон
     static let shared = ProfileImageService()
     private init() {}
+
+    static let didChangeNotification = Notification.Name(rawValue: "ProfileImageProviderDidChange")
 
     // Приватное свойство для хранения URL аватарки
     private(set) var avatarURL: String?
@@ -50,19 +53,19 @@ final class ProfileImageService {
             return
         }
 
-        let task = URLSession.shared.data(for: request) { [weak self] result in
+        let task = URLSession.shared.objectTask(for: request) { [weak self] (result: Result<UserResult, Error>) in
             switch result {
-            case .success(let data):
-                guard let self else { return }
+            case .success(let result):
+                guard let self = self else { return }
+                self.avatarURL = result.profileImage.small
+                completion(.success(result.profileImage.small))
 
-                do {
-                    let userResult = try JSONDecoder().decode(UserResult.self, from: data)
-
-                    self.avatarURL = userResult.profileImage.small
-                    completion(.success(userResult.profileImage.small))
-                } catch {
-                    print(error)
-                }
+                NotificationCenter.default
+                    .post(
+                        name: ProfileImageService.didChangeNotification,
+                        object: self,
+                        userInfo: ["URL": self.avatarURL ?? ""]
+                    )
 
             case .failure(let error):
                 print("[fetchProfileImageURL]: Ошибка запроса: \(error.localizedDescription)")
@@ -75,7 +78,7 @@ final class ProfileImageService {
     }
 
     private func makeProfileImageRequest(username: String, token: String) -> URLRequest? {
-        guard let url = URL(string: Constants.defaultBaseURLString+"/users/\(username)") else {
+        guard let url = URL(string: "https://api.unsplash.com/users/\(username)") else {
             return nil
         }
 

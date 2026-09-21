@@ -17,7 +17,7 @@ final class AuthViewController: UIViewController {
     private let oauthService = OAuth2Service.shared
     
     weak var delegate: AuthViewControllerDelegate?
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -58,14 +58,28 @@ extension AuthViewController: WebViewViewControllerDelegate {
             switch result {
             case .success:
                 self.delegate?.didAuthenticate(self)
-            case .failure:
-                // обработка ошибки
-                break
-                }
+            case let .failure(error):
+                print("Ошибка при аутентификации: \(error.localizedDescription)")
+                self.showAuthErrorAlert()
             }
+        }
     }
-
+    
     func webViewViewControllerDidCancel(_ vc: WebViewViewController) {
         vc.dismiss(animated: true)
     }
 }
+
+extension AuthViewController {
+    func showAuthErrorAlert() {
+        let alertController = UIAlertController(
+            title: "Что-то пошло не так",
+            message: "Не удалось войти в систему",
+            preferredStyle: .alert
+        )
+        let okAction = UIAlertAction(title: "Ок", style: .default, handler: nil)
+        alertController.addAction(okAction)
+        present(alertController, animated: true, completion: nil)
+    }
+}
+
