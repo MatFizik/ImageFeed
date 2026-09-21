@@ -41,9 +41,8 @@ final class WebViewViewController: UIViewController {
             URLQueryItem(name: "redirect_uri", value: Constants.redirectURI),
             URLQueryItem(name: "response_type", value: "code"),
             URLQueryItem(name: "scope", value: Constants.accessScope)
-            
-            
         ]
+        
         guard let url = urlComponents.url else {
             return
         }
