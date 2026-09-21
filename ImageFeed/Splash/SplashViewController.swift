@@ -6,18 +6,19 @@
 //
 
 import UIKit
+import SwiftKeychainWrapper
 
 final class SplashViewController: UIViewController {
     private let showAuthenticationScreenSegueIdentifier = "ShowAuthenticationScreen"
-
-    private let storage = OAuth2TokenStorage.shared
     
     private let profileService = ProfileService.shared
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        
+        let removeSuccessful: Bool = KeychainWrapper.standard.removeObject(forKey: "accessToken")
 
-        if let token = storage.accessToken {
+        if let token = KeychainWrapper.standard.string(forKey: Constants.keyAccessToken) {
             fetchProfile(token)
         } else {
             // Show Auth Screen

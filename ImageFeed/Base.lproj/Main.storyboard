@@ -329,7 +329,7 @@
                         </constraints>
                     </view>
                     <connections>
-                        <segue destination="Ix7-TH-tqj" kind="presentation" id="k2W-4j-LYb"/>
+                        <segue destination="Ix7-TH-tqj" kind="presentation" identifier="ShowAuthenticationScreen" id="k2W-4j-LYb"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="LUp-oT-DKD" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -339,7 +339,7 @@
         <!--Navigation Controller-->
         <scene sceneID="C0Q-qj-0e0">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Ix7-TH-tqj" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="ShowAuthenticationScreen" automaticallyAdjustsScrollViewInsets="NO" id="Ix7-TH-tqj" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="ZLl-Sa-hOo">
                         <rect key="frame" x="0.0" y="20" width="414" height="54"/>

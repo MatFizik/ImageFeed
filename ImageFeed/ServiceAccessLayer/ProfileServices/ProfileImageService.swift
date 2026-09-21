@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftKeychainWrapper
 
 struct ProfileImage: Codable {
     let small: String
@@ -43,7 +44,7 @@ final class ProfileImageService {
     func fetchProfileImageURL(username: String, completion: @escaping (Result<String, Error>) -> Void) {
         task?.cancel()
 
-        guard let token = OAuth2TokenStorage.shared.accessToken else {
+        guard let token = KeychainWrapper.standard.string(forKey: Constants.keyAccessToken) else {
             completion(.failure(NSError(domain: "ProfileImageService", code: 401, userInfo: [NSLocalizedDescriptionKey: "Authorization token missing"])))
             return
         }

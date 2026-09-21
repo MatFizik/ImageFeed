@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftKeychainWrapper
 
 enum OAuth2Constants {
     static let tokenURL = "https://unsplash.com/oauth/token"
@@ -13,22 +14,12 @@ enum OAuth2Constants {
 
 final class OAuth2Service {
     static let shared = OAuth2Service()
-    private let storage = OAuth2TokenStorage.shared
     
     private var task: URLSessionTask?
     
     private let decoder = JSONDecoder()
     
     private var lastCode: String?
-    
-    private(set) var authToken: String? {
-        get {
-            return storage.accessToken
-        }
-        set {
-            storage.accessToken = newValue
-        }
-    }
     
     
     private init() {}
@@ -58,9 +49,12 @@ final class OAuth2Service {
                 
                 switch result {
                 case .success(let body):
-                    let accessToken = body.accessToken
-                    self.storage.accessToken = accessToken
-                    completion(.success(accessToken))
+                    let isSuccess = KeychainWrapper.standard.set(body.accessToken, forKey: Constants.keyAccessToken)
+                    guard isSuccess else {
+                        print("Keychain save error")
+                        return
+                    }
+                    completion(.success("success"))
                     
                 case .failure(let error):
                     print("Network error: \(error)")

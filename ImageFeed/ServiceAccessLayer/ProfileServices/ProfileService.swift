@@ -6,10 +6,10 @@
 //
 
 import Foundation
+import SwiftKeychainWrapper
 
 final class ProfileService {
     static var shared = ProfileService()
-    private let tokenStorage = OAuth2TokenStorage.shared
     
     private var task: URLSessionTask?
     
@@ -53,7 +53,7 @@ final class ProfileService {
         }
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = "GET"
-        guard let accessToken = tokenStorage.accessToken else { return nil }
+        guard let accessToken = KeychainWrapper.standard.string(forKey: Constants.keyAccessToken) else { return nil }
         urlRequest.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         return urlRequest
     }
