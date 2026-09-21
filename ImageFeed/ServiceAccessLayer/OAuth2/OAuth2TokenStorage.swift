@@ -8,6 +8,9 @@
 import Foundation
 
 final class OAuth2TokenStorage{
+    static var shared = OAuth2TokenStorage()
+    private init() {}
+    
     private let storage: UserDefaults = .standard
     
     var accessToken: String? {
