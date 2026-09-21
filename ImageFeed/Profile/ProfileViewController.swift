@@ -7,43 +7,83 @@
 import UIKit
 
 final class ProfileViewController: UIViewController {
-
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-
-        let avatarImageView = UIImageView(image: UIImage(named: "test_profile_image"))
-        avatarImageView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(avatarImageView)
-        
-        let exitButton = UIButton(type: .system)
-        exitButton.setImage(UIImage(named: "Exit"), for: .normal)
-        exitButton.tintColor = .ypRed
-        exitButton.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(exitButton)
-
+    
+    let profileService = ProfileService.shared
+    
+    var profileViewModel: ProfileViewModel?
+    
+    private lazy var nameLabel: UILabel = {
         let nameLabel = UILabel()
-        nameLabel.text = "Екатерина Новикова"
         nameLabel.font = .systemFont(ofSize: 23, weight: .bold)
         nameLabel.textColor = .ypWhite
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(nameLabel)
-        
+        return nameLabel
+    }()
+    
+    private lazy var loginLabel: UILabel = {
         let loginLabel = UILabel()
-        loginLabel.text = "@ekaterina_nov"
         loginLabel.font = .systemFont(ofSize: 13, weight: .regular)
         loginLabel.textColor = .ypGray
         loginLabel.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(loginLabel)
-        
+        return loginLabel
+    }()
+    private lazy var descriptionLabel: UILabel = {
         let descriptionLabel = UILabel()
         descriptionLabel.font = .systemFont(ofSize: 13, weight: .medium)
         descriptionLabel.textColor = .ypWhite
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
+        return descriptionLabel
+    }()
+    private lazy var exitButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(named: "Exit"), for: .normal)
+        button.tintColor = .ypRed
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    private lazy var avatarImageView: UIImageView = {
+        let imageView = UIImageView(image: UIImage(named: "test_profile_image"))
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        return imageView
+    }()
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        requestForProfile()
+        addSubviews()
+        setupConstraints()
+    }
+    
+    private func requestForProfile() {
+        if let profile = ProfileService.shared.profileViewModel {
+            self.nameLabel.text = profile.name
+            self.descriptionLabel.text = profile.bio
+            self.loginLabel.text = profile.login
+        }
+        //UIBlockingProgressHUD.show()
+        //profileService.fetchBaseProfile() { result in
+            //UIBlockingProgressHUD.dismiss()
+            //switch result {
+            //case .success(let data):
+              //  self.nameLabel.text = data.name
+               // self.descriptionLabel.text = data.bio
+                //self.loginLabel.text = data.login
+            //case .failure(let error):
+              //  print(error)
+                //break
+            //}
+        }
+    
+    
+    private func addSubviews() {
+        view.addSubview(nameLabel)
+        view.addSubview(loginLabel)
         view.addSubview(descriptionLabel)
-        descriptionLabel.text = "Hello, world!"
-
+        view.addSubview(exitButton)
+        view.addSubview(avatarImageView)
+    }
+    
+    private func setupConstraints() {
         NSLayoutConstraint.activate([
             avatarImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             avatarImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 32),

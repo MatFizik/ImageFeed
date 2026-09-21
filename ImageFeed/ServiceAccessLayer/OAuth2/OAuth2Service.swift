@@ -13,31 +13,66 @@ enum OAuth2Constants {
 
 final class OAuth2Service {
     static let shared = OAuth2Service()
-    private let decoder = JSONDecoder()
     private let storage = OAuth2TokenStorage()
+    
+    private var task: URLSessionTask?
+    
+    private let decoder = JSONDecoder()
+    
+    private var lastCode: String?
+    
+    private(set) var authToken: String? {
+        get {
+            return storage.accessToken
+        }
+        set {
+            storage.accessToken = newValue
+        }
+    }
+    
     
     private init() {}
     
     func fetchOAuthToken(code: String, completion: @escaping (Result<String, Error>) -> Void) {
-        guard let urlRequest = makeTokenRequest(code: code) else { return }
+        assert(Thread.isMainThread)
         
-        let task = URLSession.shared.data(for: urlRequest) { result in
-            switch result {
-            case .success(let data):
-                do {
-                    let token = try self.decoder.decode(OAuthTokenResponseBody.self, from: data)
-                    self.storage.accessToken = token.access_token
-                    completion(.success(token.access_token))
-                }
-                catch {
-                    print("Decode error: \(error)")
+        guard lastCode != code else {
+            completion(.failure(NetworkError.invalidRequest))
+            return
+        }
+        lastCode = code
+        guard
+            let request = makeTokenRequest(code: code)
+        else {
+            completion(.failure(NetworkError.invalidRequest))
+            return
+        }
+        
+        let task = URLSession.shared.data(for: request) { [weak self] result in
+            DispatchQueue.main.async {
+                
+                switch result {
+                case .success(let data):
+                    do {
+                        let token = try self?.decoder.decode(OAuthTokenResponseBody.self, from: data)
+                        guard let token = token else { return }
+                        self?.storage.accessToken = token.access_token
+                        completion(.success(token.access_token))
+                    }
+                    catch {
+                        print("Decode error: \(error)")
+                        completion(.failure(error))
+                    }
+                case .failure(let error):
+                    print("Network error: \(error)")
                     completion(.failure(error))
                 }
-            case .failure(let error):
-                print("Network error: \(error)")
-                completion(.failure(error))
+                
+                self?.task = nil
+                self?.lastCode = nil
             }
         }
+        self.task = task
         task.resume()
     }
     
