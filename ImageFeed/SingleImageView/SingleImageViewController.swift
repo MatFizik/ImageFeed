@@ -20,8 +20,6 @@ final class SingleImageViewController: UIViewController {
         scrollView.minimumZoomScale = 0.1
         scrollView.maximumZoomScale = 1.25
         
-        imageView.image = image
-        
         guard let image else { return }
         imageView.frame.size = image.size
         
@@ -45,7 +43,7 @@ final class SingleImageViewController: UIViewController {
         scrollView.setContentOffset(CGPoint(x: x, y: y), animated: false)
     }
     
-    @IBAction func didTabShareButton(_ sender: Any) {
+    @IBAction func didTapShareButton(_ sender: Any) {
         guard let image else { return }
         let share = UIActivityViewController(
             activityItems: [image],
