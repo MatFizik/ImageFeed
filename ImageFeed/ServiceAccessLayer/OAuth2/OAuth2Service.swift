@@ -19,7 +19,11 @@ final class OAuth2Service {
     private init() {}
     
     func fetchOAuthToken(code: String, completion: @escaping (Result<String, Error>) -> Void) {
-        guard let urlRequest = makeTokenRequest(code: code) else { return }
+        guard let urlRequest = makeTokenRequest(code: code) else {
+            print("[OAuth2Service.fetchOAuthToken]: invalidRequest - не удалось собрать запрос")
+            completion(.failure(NetworkError.invalidRequest))
+            return
+        }
         
         let task = URLSession.shared.data(for: urlRequest) { result in
             switch result {
@@ -30,11 +34,11 @@ final class OAuth2Service {
                     completion(.success(token.access_token))
                 }
                 catch {
-                    print("Decode error: \(error)")
-                    completion(.failure(error))
+                    print("[OAuth2Service.fetchOAuthToken]: decodingError - \(error), url: \(OAuth2Constants.tokenURL)")
+                    completion(.failure(NetworkError.decodingError(error)))
                 }
             case .failure(let error):
-                print("Network error: \(error)")
+                print("[OAuth2Service.fetchOAuthToken]: \(error), url: \(OAuth2Constants.tokenURL)")
                 completion(.failure(error))
             }
         }
@@ -43,7 +47,8 @@ final class OAuth2Service {
     
     private func makeTokenRequest(code: String) -> URLRequest? {
         guard var urlComponents = URLComponents(string: OAuth2Constants.tokenURL) else {
-           return nil
+            print("[OAuth2Service.makeTokenRequest]: invalidRequest - не удалось создать URLComponents из строки \(OAuth2Constants.tokenURL)")
+            return nil
         }
         urlComponents.queryItems = [
             URLQueryItem(name: "client_id", value: Constants.accessKey),
@@ -53,6 +58,7 @@ final class OAuth2Service {
             URLQueryItem(name: "grant_type", value: "authorization_code")
         ]
         guard let url = urlComponents.url else {
+            print("[OAuth2Service.makeTokenRequest]: invalidRequest - не удалось получить URL из URLComponents \(urlComponents)")
             return nil
         }
         var request = URLRequest(url: url)

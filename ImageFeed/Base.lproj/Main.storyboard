@@ -36,18 +36,18 @@
             <objects>
                 <viewController id="bx5-lP-aFz" customClass="AuthViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="zPZ-N0-Rbx">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="848"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="AuthScreenLogo" translatesAutoresizingMaskIntoConstraints="NO" id="efL-Vp-9qQ">
-                                <rect key="frame" x="177" y="431" width="60" height="60"/>
+                                <rect key="frame" x="177" y="452" width="60" height="60"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="60" id="LPR-n0-E3a"/>
                                     <constraint firstAttribute="width" constant="60" id="mwt-ab-Wkq"/>
                                 </constraints>
                             </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xgE-Mw-6tc">
-                                <rect key="frame" x="16" y="676" width="382" height="48"/>
+                                <rect key="frame" x="16" y="690" width="382" height="48"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="48" id="ajG-4T-pyx"/>
                                 </constraints>
@@ -88,11 +88,11 @@
             <objects>
                 <viewController id="Rzf-3n-FnB" customClass="WebViewViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="fiA-tw-P1d">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="848"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <wkWebView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="C0d-iG-q2I">
-                                <rect key="frame" x="0.0" y="74" width="414" height="774"/>
+                                <rect key="frame" x="0.0" y="102" width="414" height="794"/>
                                 <color key="backgroundColor" name="YP White"/>
                                 <wkWebViewConfiguration key="configuration">
                                     <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
@@ -100,7 +100,7 @@
                                 </wkWebViewConfiguration>
                             </wkWebView>
                             <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="1aA-wW-dHo">
-                                <rect key="frame" x="0.0" y="74" width="414" height="4"/>
+                                <rect key="frame" x="0.0" y="102" width="414" height="4"/>
                                 <color key="tintColor" name="YP Black"/>
                             </progressView>
                         </subviews>
@@ -329,7 +329,7 @@
                         </constraints>
                     </view>
                     <connections>
-                        <segue destination="Ix7-TH-tqj" kind="presentation" id="k2W-4j-LYb"/>
+                        <segue destination="Ix7-TH-tqj" kind="presentation" identifier="ShowAuthenticationScreen" modalPresentationStyle="fullScreen" id="k2W-4j-LYb"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="LUp-oT-DKD" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -341,8 +341,9 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Ix7-TH-tqj" sceneMemberID="viewController">
                     <toolbarItems/>
+                    <navigationItem key="navigationItem" id="vk2-iU-0Lm"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="ZLl-Sa-hOo">
-                        <rect key="frame" x="0.0" y="20" width="414" height="54"/>
+                        <rect key="frame" x="0.0" y="48" width="414" height="54"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>

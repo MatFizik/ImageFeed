@@ -11,6 +11,7 @@ final class SplashViewController: UIViewController {
     private let showAuthenticationScreenSegueIdentifier = "ShowAuthenticationScreen"
 
     private let storage = OAuth2TokenStorage()
+    private var didCheckAuthStatus = false
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -63,8 +64,8 @@ extension SplashViewController {
 
 extension SplashViewController: AuthViewControllerDelegate {
     func didAuthenticate(_ vc: AuthViewController) {
-        vc.dismiss(animated: true)
-        
-        switchToTabBarController()
+        vc.dismiss(animated: true) { [weak self] in
+            self?.switchToTabBarController()
+        }
     }
 }
