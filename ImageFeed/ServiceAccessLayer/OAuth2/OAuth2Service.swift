@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftKeychainWrapper
 
 enum OAuth2Constants {
     static let tokenURL = "https://unsplash.com/oauth/token"
@@ -13,35 +14,56 @@ enum OAuth2Constants {
 
 final class OAuth2Service {
     static let shared = OAuth2Service()
+    
+    private var task: URLSessionTask?
+    
     private let decoder = JSONDecoder()
-    private let storage = OAuth2TokenStorage()
+    
+    private var lastCode: String?
+    
     
     private init() {}
     
     func fetchOAuthToken(code: String, completion: @escaping (Result<String, Error>) -> Void) {
-        guard let urlRequest = makeTokenRequest(code: code) else {
-            print("[OAuth2Service.fetchOAuthToken]: invalidRequest - не удалось собрать запрос")
+        assert(Thread.isMainThread)
+        
+        guard lastCode != code else {
+            completion(.failure(NetworkError.invalidRequest))
+            return
+        }
+        lastCode = code
+        guard
+            let request = makeTokenRequest(code: code)
+        else {
             completion(.failure(NetworkError.invalidRequest))
             return
         }
         
-        let task = URLSession.shared.data(for: urlRequest) { result in
-            switch result {
-            case .success(let data):
-                do {
-                    let token = try self.decoder.decode(OAuthTokenResponseBody.self, from: data)
-                    self.storage.accessToken = token.access_token
-                    completion(.success(token.access_token))
+        let task = URLSession.shared.objectTask(for: request) { [weak self] (result:
+            Result<OAuthTokenResponseBody, Error>) in
+            
+                UIBlockingProgressHUD.dismiss()
+                
+                guard let self = self else { return }
+                
+                switch result {
+                case .success(let body):
+                    let isSuccess = KeychainWrapper.standard.set(body.accessToken, forKey: Constants.keyAccessToken)
+                    guard isSuccess else {
+                        AppLogger.error("Keychain save error", metadata: ["metadataKey": "fetchOAuthToken"])
+                        return
+                    }
+                    completion(.success("success"))
+                    
+                case .failure(let error):
+                    AppLogger.error("Ошибка запроса: \(error.localizedDescription)", metadata: ["metadataKey": "fetchOAuthToken","Error": "\(error)"], category: LogCategory.request)
+                    completion(.failure(error))
                 }
-                catch {
-                    print("[OAuth2Service.fetchOAuthToken]: decodingError - \(error), url: \(OAuth2Constants.tokenURL)")
-                    completion(.failure(NetworkError.decodingError(error)))
-                }
-            case .failure(let error):
-                print("[OAuth2Service.fetchOAuthToken]: \(error), url: \(OAuth2Constants.tokenURL)")
-                completion(.failure(error))
-            }
+                
+                self.task = nil
+                self.lastCode = nil
         }
+        self.task = task
         task.resume()
     }
     
@@ -62,7 +84,7 @@ final class OAuth2Service {
             return nil
         }
         var request = URLRequest(url: url)
-        request.httpMethod = "POST"
+        request.httpMethod = HTTPMethod.post.rawValue
         return request
     }
 }

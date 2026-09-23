@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import ProgressHUD
+import Logging
 
 protocol AuthViewControllerDelegate: AnyObject {
     func didAuthenticate(_ vc: AuthViewController)
@@ -16,7 +18,7 @@ final class AuthViewController: UIViewController {
     private let oauthService = OAuth2Service.shared
     
     weak var delegate: AuthViewControllerDelegate?
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -48,19 +50,37 @@ final class AuthViewController: UIViewController {
 
 extension AuthViewController: WebViewViewControllerDelegate {
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
-        oauthService.fetchOAuthToken(code: code) { [weak self] result in
+        UIBlockingProgressHUD.show()
+        oauthService.fetchOAuthToken(code: code) {[weak self] result in
+            UIBlockingProgressHUD.dismiss()
+            
             guard let self = self else { return }
             switch result {
             case .success:
                 self.delegate?.didAuthenticate(self)
-            case .failure:
-                // обработка ошибки
-                break
+                
+            case let .failure(error):
+                AppLogger.error("Ошибка при аутентификации:", metadata: ["from": "webViewViewController", "Error":"\(error.localizedDescription)"])
+                self.showAuthErrorAlert()
             }
         }
     }
-
+    
     func webViewViewControllerDidCancel(_ vc: WebViewViewController) {
         vc.navigationController?.popViewController(animated: true)
     }
 }
+
+extension AuthViewController {
+    func showAuthErrorAlert() {
+        let alertController = UIAlertController(
+            title: "Что-то пошло не так",
+            message: "Не удалось войти в систему",
+            preferredStyle: .alert
+        )
+        let okAction = UIAlertAction(title: "Ок", style: .default, handler: nil)
+        alertController.addAction(okAction)
+        present(alertController, animated: true, completion: nil)
+    }
+}
+
