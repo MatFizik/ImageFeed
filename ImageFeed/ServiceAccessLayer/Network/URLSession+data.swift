@@ -7,6 +7,13 @@
 
 import Foundation
 
+enum HTTPMethod: String {
+    case get = "GET"
+    case post = "POST"
+    case put = "PUT"
+    case delete = "DELETE"
+}
+
 enum NetworkError: Error {
     case httpStatusCode(Int)
     case urlRequestError(Error)
@@ -55,21 +62,28 @@ extension URLSession {
             switch result {
             case .success(let data):
                 if let jsonString = String(data: data, encoding: .utf8) {
-                    print("Полученные данные: \(jsonString)")
+                    AppLogger.info("Полученные данные", metadata: ["from": "objectTask", "Data": jsonString])
                 }
                 do {
                     let decodedObject = try decoder.decode(T.self, from: data)
                     completion(.success(decodedObject))
                 } catch {
                     if let decodingError = error as? DecodingError {
-                        print("Ошибка декодирования: \(decodingError), Данные: \(String(data: data, encoding: .utf8) ?? "")")
+                        AppLogger.error("Ошибка декодирования",
+                                        metadata: ["from": "objectTask",
+                                                   "Error": "\(decodingError)",
+                                                   "Data": "\(String(data: data, encoding: .utf8) ?? "")"], category: LogCategory.decoding)
                     } else {
-                        print("Ошибка декодирования: \(error.localizedDescription), Данные: \(String(data: data, encoding: .utf8) ?? "")")
+                        AppLogger.error("Ошибка декодирования",
+                                        metadata: ["from": "objectTask",
+                                                   "Error": "\(error.localizedDescription)",
+                                                   "Data": " \(String(data: data, encoding: .utf8) ?? "")"])
                     }
                     completion(.failure(error))
                 }
             case .failure(let error):
-                print("Ошибка запроса: \(error.localizedDescription)")
+                AppLogger.error("Ошибка запроса", metadata: ["from": "objectTask",
+                                                             "Error": "\(error.localizedDescription)"], category: LogCategory.request)
                 completion(.failure(error))
             }
         }

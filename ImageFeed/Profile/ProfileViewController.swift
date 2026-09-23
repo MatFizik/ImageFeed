@@ -6,6 +6,7 @@
 //
 import UIKit
 import Kingfisher
+import Logging
 
 final class ProfileViewController: UIViewController {
     
@@ -70,14 +71,13 @@ final class ProfileViewController: UIViewController {
             }
         updateAvatar()
     }
-
+    
     private func updateAvatar() {
         guard
             let profileImageURL = ProfileImageService.shared.avatarURL,
             let imageUrl = URL(string: profileImageURL)
         else { return }
-        
-        print("imageUrl: \(imageUrl)")
+        AppLogger.info("imageUrl: \(imageUrl)")
         
         let placeholderImage = UIImage(systemName: "person.circle.fill")?
             .withTintColor(.lightGray, renderingMode: .alwaysOriginal)
@@ -104,11 +104,13 @@ final class ProfileViewController: UIViewController {
                     print(value.source)
                     
                 case .failure(let error):
-                    print("Ошибка получения аватарки: \(error.localizedDescription)")
+                    AppLogger.error("Ошибка получения аватарки",
+                                    metadata: ["from":"updateAvatar",
+                                               "error": "\(error.localizedDescription)"])
                 }
             }
     }
-       
+    
     
     private func requestForProfile() {
         if let profile = ProfileService.shared.profileViewModel {
@@ -116,19 +118,7 @@ final class ProfileViewController: UIViewController {
             self.descriptionLabel.text = profile.bio
             self.loginLabel.text = profile.login
         }
-        //UIBlockingProgressHUD.show()
-        //profileService.fetchBaseProfile() { result in
-            //UIBlockingProgressHUD.dismiss()
-            //switch result {
-            //case .success(let data):
-              //  self.nameLabel.text = data.name
-               // self.descriptionLabel.text = data.bio
-                //self.loginLabel.text = data.login
-            //case .failure(let error):
-              //  print(error)
-                //break
-            //}
-        }
+    }
     
     
     private func addSubviews() {
@@ -145,18 +135,18 @@ final class ProfileViewController: UIViewController {
             avatarImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 32),
             avatarImageView.widthAnchor.constraint(equalToConstant: 70),
             avatarImageView.heightAnchor.constraint(equalToConstant: 70),
-
+            
             exitButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             exitButton.centerYAnchor.constraint(equalTo: avatarImageView.centerYAnchor),
             exitButton.widthAnchor.constraint(equalToConstant: 24),
             exitButton.heightAnchor.constraint(equalToConstant: 24),
-
+            
             nameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             nameLabel.topAnchor.constraint(equalTo: avatarImageView.bottomAnchor, constant: 8),
-
+            
             loginLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             loginLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 8),
-
+            
             descriptionLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             descriptionLabel.topAnchor.constraint(equalTo: loginLabel.bottomAnchor, constant: 8)
         ])

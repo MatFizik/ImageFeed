@@ -42,7 +42,6 @@ final class OAuth2Service {
         let task = URLSession.shared.objectTask(for: request) { [weak self] (result:
             Result<OAuthTokenResponseBody, Error>) in
             
-            DispatchQueue.main.async {
                 UIBlockingProgressHUD.dismiss()
                 
                 guard let self = self else { return }
@@ -51,19 +50,18 @@ final class OAuth2Service {
                 case .success(let body):
                     let isSuccess = KeychainWrapper.standard.set(body.accessToken, forKey: Constants.keyAccessToken)
                     guard isSuccess else {
-                        print("Keychain save error")
+                        AppLogger.error("Keychain save error", metadata: ["metadataKey": "fetchOAuthToken"])
                         return
                     }
                     completion(.success("success"))
                     
                 case .failure(let error):
-                    print("Network error: \(error)")
+                    AppLogger.error("Ошибка запроса: \(error.localizedDescription)", metadata: ["metadataKey": "fetchOAuthToken","Error": "\(error)"], category: LogCategory.request)
                     completion(.failure(error))
                 }
                 
                 self.task = nil
                 self.lastCode = nil
-            }
         }
         self.task = task
         task.resume()
@@ -84,7 +82,7 @@ final class OAuth2Service {
             return nil
         }
         var request = URLRequest(url: url)
-        request.httpMethod = "POST"
+        request.httpMethod = HTTPMethod.post.rawValue
         return request
     }
 }

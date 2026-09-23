@@ -7,6 +7,7 @@
 
 import UIKit
 import ProgressHUD
+import Logging
 
 protocol AuthViewControllerDelegate: AnyObject {
     func didAuthenticate(_ vc: AuthViewController)
@@ -59,7 +60,7 @@ extension AuthViewController: WebViewViewControllerDelegate {
                 self.delegate?.didAuthenticate(self)
                 
             case let .failure(error):
-                print("Ошибка при аутентификации: \(error.localizedDescription)")
+                AppLogger.error("Ошибка при аутентификации:", metadata: ["from": "webViewViewController", "Error":"\(error.localizedDescription)"])
                 self.showAuthErrorAlert()
             }
         }

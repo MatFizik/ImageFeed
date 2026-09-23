@@ -52,7 +52,7 @@ final class ProfileService {
             return nil
         }
         var urlRequest = URLRequest(url: url)
-        urlRequest.httpMethod = "GET"
+        urlRequest.httpMethod = HTTPMethod.get.rawValue
         guard let accessToken = KeychainWrapper.standard.string(forKey: Constants.keyAccessToken) else { return nil }
         urlRequest.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         return urlRequest

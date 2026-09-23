@@ -84,7 +84,7 @@ final class SplashViewController: UIViewController {
                 self.switchToTabBarController()
                 
             case let .failure(error):
-                print(error)
+                AppLogger.error("Ошибка при получении профиля", metadata: ["Error": "\(error)"], category: LogCategory.request)
                 break
             }
         }
