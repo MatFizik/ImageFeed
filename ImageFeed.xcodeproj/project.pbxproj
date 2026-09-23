@@ -232,6 +232,7 @@
 				0350C598306122E600E11066 /* XCRemoteSwiftPackageReference "ProgressHUD" */,
 				0350C5B03061A73600E11066 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				0350C5B33061ACD500E11066 /* XCRemoteSwiftPackageReference "SwiftKeychainWrapper" */,
+				038AAC653063B5AD00F43F8B /* XCRemoteSwiftPackageReference "swift-log" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 03DE774A2FCF52D200144CFE /* Products */;
@@ -650,6 +651,14 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 4.0.1;
+			};
+		};
+		038AAC653063B5AD00F43F8B /* XCRemoteSwiftPackageReference "swift-log" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-log";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.15.1;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
