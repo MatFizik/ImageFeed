@@ -19,6 +19,8 @@ final class ImagesListViewController: UIViewController {
         return formatter
     }()
     
+    let imageListService = ImageListService.shared
+    
     private let singleImageSegueIdentifier = "ShowSingleImage"
 
     override func viewDidLoad() {
@@ -95,5 +97,25 @@ extension ImagesListViewController: UITableViewDelegate {
         let scale = imageViewWidth / imageWidth
         let cellHeight = image.size.height * scale + imageInsets.top + imageInsets.bottom
         return cellHeight
+    }
+    
+    func tableView(
+        _ tableView: UITableView,
+        willDisplay cell: UITableViewCell,
+        forRowAt indexPath: IndexPath
+    ) {
+        //if indexPath.row + 1 == imageListService.photos.count {
+        if indexPath.row + 1 == photosName.count {
+            imageListService.fetchPhotosNextPage() {result in
+                switch result {
+                case .success(let photos):
+                    //TODO:
+                    break
+                case .failure(let error):
+                    break
+                    //TODO:
+                }
+            }
+        }
     }
 }
