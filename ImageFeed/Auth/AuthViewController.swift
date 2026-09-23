@@ -25,6 +25,7 @@ final class AuthViewController: UIViewController {
         configureBackButton()
     }
     
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == showWebViewSegueIdentifier {
             guard
@@ -54,7 +55,6 @@ extension AuthViewController: WebViewViewControllerDelegate {
             UIBlockingProgressHUD.dismiss()
             
             guard let self = self else { return }
-            
             switch result {
             case .success:
                 self.delegate?.didAuthenticate(self)
@@ -67,7 +67,7 @@ extension AuthViewController: WebViewViewControllerDelegate {
     }
     
     func webViewViewControllerDidCancel(_ vc: WebViewViewController) {
-        vc.dismiss(animated: true)
+        vc.navigationController?.popViewController(animated: true)
     }
 }
 

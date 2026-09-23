@@ -69,7 +69,8 @@ final class OAuth2Service {
     
     private func makeTokenRequest(code: String) -> URLRequest? {
         guard var urlComponents = URLComponents(string: OAuth2Constants.tokenURL) else {
-           return nil
+            print("[OAuth2Service.makeTokenRequest]: invalidRequest - не удалось создать URLComponents из строки \(OAuth2Constants.tokenURL)")
+            return nil
         }
         urlComponents.queryItems = [
             URLQueryItem(name: "client_id", value: Constants.accessKey),
@@ -79,6 +80,7 @@ final class OAuth2Service {
             URLQueryItem(name: "grant_type", value: "authorization_code")
         ]
         guard let url = urlComponents.url else {
+            print("[OAuth2Service.makeTokenRequest]: invalidRequest - не удалось получить URL из URLComponents \(urlComponents)")
             return nil
         }
         var request = URLRequest(url: url)
