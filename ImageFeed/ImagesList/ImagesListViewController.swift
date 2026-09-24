@@ -57,7 +57,7 @@ final class ImagesListViewController: UIViewController {
             return
         }
         
-        viewController.image = UIImage(named: photos[indexPath.row].largeImageURL)
+        viewController.largeImageUrl = photos[indexPath.row].largeImageURL
     }
     
     private func updateTableViewAnimated() {

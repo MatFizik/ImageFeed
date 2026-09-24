@@ -249,7 +249,7 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" image="share_btn"/>
                                 <connections>
-                                    <action selector="didTabShareButton:" destination="HlS-7H-1ba" eventType="touchUpInside" id="cE8-6n-l26"/>
+                                    <action selector="didTapShareButton:" destination="HlS-7H-1ba" eventType="touchUpInside" id="81d-Dn-RRL"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Kvv-UG-eXv" userLabel="BackButton">
@@ -283,6 +283,7 @@
                     <connections>
                         <outlet property="imageView" destination="m4a-Tf-cVN" id="aWX-LI-MrB"/>
                         <outlet property="scrollView" destination="Pto-od-Qjl" id="WcN-9Z-FcY"/>
+                        <outlet property="shareButton" destination="E39-cB-KLk" id="69Y-DJ-5wU"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="C7O-fG-Uxd" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
