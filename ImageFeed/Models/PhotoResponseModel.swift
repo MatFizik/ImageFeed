@@ -14,6 +14,7 @@ struct PhotoResponseModel: Codable {
     let welcomeDescription: String?
     let createdAt: Date?
     let urls: PhotoUrl
+    let isLiked: Bool
     
     private enum CodingKeys: String, CodingKey {
         case id
@@ -22,6 +23,7 @@ struct PhotoResponseModel: Codable {
         case welcomeDescription = "description"
         case createdAt = "created_at"
         case urls
+        case isLiked = "liked_by_user"
     }
 }
 

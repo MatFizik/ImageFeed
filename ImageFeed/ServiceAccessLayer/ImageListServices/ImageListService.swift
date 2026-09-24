@@ -13,7 +13,8 @@ final class ImageListService {
     static var shared = ImageListService()
     private init() {}
     
-    private var task: URLSessionTask?
+    private var fetchPhotosTask: URLSessionTask?
+    private var likeTask: URLSessionTask?
     
     private(set) var photos: [PhotoViewModel] = []
     
@@ -21,11 +22,11 @@ final class ImageListService {
     
     private var lastLoadedPage: Int?
     
-    // MARK: -GetRequest
+    // MARK: -GetRequestFetchPhotosNextPage
     func fetchPhotosNextPage() {
-        guard task?.state != .running else {return}
+        guard fetchPhotosTask?.state != .running else {return}
         let nextPage = (lastLoadedPage ?? 0) + 1
-        guard let request = makeRequest(nextPage) else {return}
+        guard let request = makeRequestFetchPhotosNextPage(nextPage) else {return}
         
         let task = URLSession.shared.objectTask(for: request) {[weak self] (result: Result<[PhotoResponseModel], Error>) in
             
@@ -48,16 +49,74 @@ final class ImageListService {
             case .failure(_):
                 AppLogger.error("Ошибка получения фотографий")
             }
-            self?.task = nil
+            self?.fetchPhotosTask = nil
         }
-        self.task = task
+        self.fetchPhotosTask = task
         task.resume()
     }
     
-    // MARK: -MakeRequest
-    private func makeRequest(_ page: Int) -> URLRequest? {
+    //MARK: -GetRequestChangeLike
+    func changeLike(photoId: String, isLike: Bool, completion: @escaping (Result<Void, Error>) -> Void) {
+        guard likeTask == nil else {return}
+        guard let request = makeRequestChangeLike(photoId, isLike) else {return}
+        
+        let task = URLSession.shared.data(for: request) {[weak self] result in
+            guard let self else {return}
+            
+            switch result {
+            case .success:
+                if let index = self.photos.firstIndex(where: { $0.id == photoId }) {
+                   let photo = self.photos[index]
+                   let newPhoto = PhotoViewModel(
+                            id: photo.id,
+                            size: photo.size,
+                            createdAt: photo.createdAt,
+                            welcomeDescription: photo.welcomeDescription,
+                            thumbImageURL: photo.thumbImageURL,
+                            largeImageURL: photo.largeImageURL,
+                            isLiked: !photo.isLiked
+                        )
+                    self.photos = self.photos.withReplaced(itemAt: index, newValue: newPhoto)
+                }
+                completion(.success(()))
+            case .failure(let error):
+                AppLogger.error("Ошибка в методе changeLike", metadata: ["from":"ImageListService","Error": "\(error)"])
+                    completion(.failure(error))
+            }
+            self.likeTask = nil
+        }
+        self.likeTask = task
+        task.resume()
+    }
+    
+    // MARK: -MakeRequestChangeLike
+    private func makeRequestChangeLike(_ photoId: String, _ isDelete: Bool) -> URLRequest? {
+        guard let urlComponents = URLComponents(string:
+                                                    "\(Constants.defaultBaseURLString)/photos/\(photoId)/like") else {
+            AppLogger.error("Ошибка формирования URLComponents", metadata: ["from":"makeRequestChangeLike"], category: LogCategory.request)
+            return nil
+        }
+        guard let url = urlComponents.url else {
+            AppLogger.error("Ошибка: не удалось получить URL", metadata: ["from":"makeRequestChangeLike"], category: LogCategory.request)
+            return nil
+        }
+        
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = isDelete ? HTTPMethod.delete.rawValue : HTTPMethod.post.rawValue
+        
+        guard let accessToken = KeychainWrapper.standard.string(forKey: Constants.keyAccessToken) else {
+            AppLogger.error("Ошибка при получении токена", metadata: ["from":"makeRequestFetchPhotosNextPage"], category: LogCategory.request)
+            return nil}
+        
+        urlRequest.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        
+        return urlRequest
+    }
+    
+    // MARK: -MakeRequestFetchPhotosNextPage
+    private func makeRequestFetchPhotosNextPage(_ page: Int) -> URLRequest? {
         guard var urlComponents = URLComponents(string: "\(Constants.defaultBaseURLString)/photos") else {
-            AppLogger.error("Ошибка формирования URLComponents", metadata: ["from":"ImageListService"], category: LogCategory.request)
+            AppLogger.error("Ошибка формирования URLComponents", metadata: ["from":"makeRequestFetchPhotosNextPage"], category: LogCategory.request)
             return nil
         }
         
@@ -66,7 +125,7 @@ final class ImageListService {
         ]
         
         guard let url = urlComponents.url else {
-            AppLogger.error("Ошибка: не удалось получить URL", metadata: ["from":"ImageListService"], category: LogCategory.request)
+            AppLogger.error("Ошибка: не удалось получить URL", metadata: ["from":"makeRequestFetchPhotosNextPage"], category: LogCategory.request)
             return nil
         }
         
@@ -74,7 +133,7 @@ final class ImageListService {
         urlRequest.httpMethod = HTTPMethod.get.rawValue
         
         guard let accessToken = KeychainWrapper.standard.string(forKey: Constants.keyAccessToken) else {
-            AppLogger.error("Ошибка при получении токена", metadata: ["from":"ImageListService"], category: LogCategory.request)
+            AppLogger.error("Ошибка при получении токена", metadata: ["from":"makeRequestFetchPhotosNextPage"], category: LogCategory.request)
             return nil}
         
         urlRequest.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
@@ -92,8 +151,15 @@ final class ImageListService {
             welcomeDescription: model.welcomeDescription,
             thumbImageURL: model.urls.thumb,
             largeImageURL: model.urls.regular,
-            isLiked: false
+            isLiked: model.isLiked
         )
     }
 }
 
+extension Array {
+    func withReplaced(itemAt index: Int, newValue: Element) -> [Element] {
+        var copy = self
+        copy[index] = newValue
+        return copy
+    }
+}

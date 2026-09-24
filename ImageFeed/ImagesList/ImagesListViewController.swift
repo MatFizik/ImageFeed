@@ -85,9 +85,12 @@ extension ImagesListViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: ImagesListCell.reuseIdentifier, for: indexPath)
         
+        
         guard let imageListCell = cell as? ImagesListCell else {
             return UITableViewCell()
         }
+        
+        imageListCell.delegate = self
         
         configCell(for: imageListCell, with: indexPath)
         
@@ -108,8 +111,7 @@ extension ImagesListViewController {
             cell.dateLabel.text = ""
         }
         
-        let likeImage = photo.isLiked ? UIImage(named: "like_btn_active") : UIImage(named: "like_btn_no_active")
-        cell.likeButton.setImage(likeImage, for: .normal)
+        cell.setIsLiked(isLiked: photo.isLiked)
     }
 }
 
@@ -138,4 +140,43 @@ extension ImagesListViewController: UITableViewDelegate {
             imageListService.fetchPhotosNextPage()
         }
     }
+}
+
+extension ImagesListViewController: ImagesListCellDelegate {
+    func imageListCellDidTapLike(_ cell: ImagesListCell) {
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        let photo = photos[indexPath.row]
+        UIBlockingProgressHUD.show()
+        imageListService.changeLike(photoId: photo.id, isLike: photo.isLiked) {result in
+            switch result{
+                case .success:
+                self.photos = self.imageListService.photos
+                cell.setIsLiked(isLiked: photo.isLiked)
+                UIBlockingProgressHUD.dismiss()
+                case .failure:
+                UIBlockingProgressHUD.dismiss()
+                self.showErrorAlert()
+                break
+            }
+        }
+    }
+}
+
+extension ImagesListViewController {
+    func showErrorAlert() {
+        let alertController = UIAlertController(
+            title: "Что-то пошло не так",
+            message: "Кнопка с лайком не работает :(",
+            preferredStyle: .alert
+        )
+        let okAction = UIAlertAction(title: "Ок", style: .default, handler: nil)
+        alertController.addAction(okAction)
+        present(alertController, animated: true, completion: nil)
+    }
+}
+
+
+
+protocol ImagesListCellDelegate: AnyObject {
+    func imageListCellDidTapLike(_ cell: ImagesListCell)
 }
