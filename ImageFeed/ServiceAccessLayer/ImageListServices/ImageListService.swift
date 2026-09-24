@@ -18,7 +18,7 @@ final class ImageListService {
     
     private(set) var photos: [PhotoViewModel] = []
     
-    static let didChangeNotification = Notification.Name(rawValue: "ImageListServiceDidChange")
+    static let didChangeNotification = Notification.Name("ImageListServiceDidChange")
     
     private var lastLoadedPage: Int?
     
@@ -50,7 +50,7 @@ final class ImageListService {
                         userInfo: ["photos": self?.photos as Any]
                     )
                 
-            case .failure(_):
+            case .failure:
                 AppLogger.error("Ошибка получения фотографий")
             }
             self?.fetchPhotosTask = nil
@@ -61,8 +61,14 @@ final class ImageListService {
     
     //MARK: -GetRequestChangeLike
     func changeLike(photoId: String, isLike: Bool, completion: @escaping (Result<Void, Error>) -> Void) {
-        guard likeTask == nil else {return}
-        guard let request = makeRequestChangeLike(photoId, isLike) else {return}
+        guard likeTask == nil else {
+            completion(.failure(NetworkError.invalidRequest))
+            return
+        }
+        guard let request = makeRequestChangeLike(photoId, isLike) else {
+            completion(.failure(NetworkError.invalidRequest))
+            return
+        }
         
         let task = URLSession.shared.data(for: request) {[weak self] result in
             guard let self else {return}
@@ -157,13 +163,5 @@ final class ImageListService {
             largeImageURL: model.urls.regular,
             isLiked: model.isLiked
         )
-    }
-}
-
-extension Array {
-    func withReplaced(itemAt index: Int, newValue: Element) -> [Element] {
-        var copy = self
-        copy[index] = newValue
-        return copy
     }
 }
