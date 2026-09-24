@@ -41,7 +41,7 @@ final class SingleImageViewController: UIViewController {
             
             switch result {
             case .success(let imageResult):
-                shareButton.isHidden = true
+                shareButton.isHidden = false
                 self.rescaleAndCenterImageInScrollView(image: imageResult.image)
             case .failure:
                 self.showError()
