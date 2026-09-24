@@ -101,10 +101,18 @@ extension ImagesListViewController: UITableViewDataSource {
 extension ImagesListViewController {
     func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
         let photo = photos[indexPath.row]
-        cell.cellImage.kf.indicatorType = .activity
-        cell.cellImage.kf.setImage(with: URL(string: photo.thumbImageURL), placeholder: UIImage(named: "placeholder")
-        )
-        
+        cell.setImageState(.loading)
+        cell.cellImage.kf.setImage(with: URL(string: photo.thumbImageURL)) { [weak cell] result in
+            switch result {
+            case .success(let value):
+                cell?.setImageState(.finished(value.image))
+            case .failure(let error):
+                // загрузка отменена или ячейка уже переиспользована под другое фото
+                guard !error.isTaskCancelled, !error.isNotCurrentTask else { return }
+                cell?.setImageState(.error)
+            }
+        }
+
         if let date = photo.createdAt {
             cell.dateLabel.text = dateFormatter.string(from: date)
         } else {
