@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 final class ImagesListCell: UITableViewCell {
     override func awakeFromNib() {
@@ -14,6 +15,12 @@ final class ImagesListCell: UITableViewCell {
     }
     
     static let reuseIdentifier = "ImagesListCell"
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        cellImage.kf.cancelDownloadTask()
+        cellImage.image = nil
+    }
     
     
     @IBOutlet weak var likeButton: UIButton!

@@ -15,28 +15,38 @@ final class ImageListService {
     
     private var task: URLSessionTask?
     
-    private let decoder = JSONDecoder()
-    
     private(set) var photos: [PhotoViewModel] = []
+    
+    static let didChangeNotification = Notification.Name(rawValue: "ImageListServiceDidChange")
     
     private var lastLoadedPage: Int?
     
     // MARK: -GetRequest
-    func fetchPhotosNextPage(completion: @escaping (Result<[PhotoViewModel], Error>) -> Void) {
+    func fetchPhotosNextPage() {
         guard task?.state != .running else {return}
         let nextPage = (lastLoadedPage ?? 0) + 1
         guard let request = makeRequest(nextPage) else {return}
         
-        let task = URLSession.shared.objectTask(for: request) {[weak self] (result: Result<PhotoResponseModel, Error>) in
+        let task = URLSession.shared.objectTask(for: request) {[weak self] (result: Result<[PhotoResponseModel], Error>) in
             
             switch result {
-            case .success(let data):
-                guard let photoViewModel = self?.convert(model: data) else {return}
-                self?.photos.append(photoViewModel)
+            case .success(let listData):
+                for data in listData {
+                    guard let photoViewModel = self?.convert(model: data) else {return}
+                    self?.photos.append(photoViewModel)
+                }
+                
                 self?.lastLoadedPage = nextPage
-                completion(.success(self?.photos ?? []))
-            case .failure(let error):
-                completion(.failure(error))
+                
+                NotificationCenter.default
+                    .post(
+                        name: ImageListService.didChangeNotification,
+                        object: self,
+                        userInfo: ["photos": self?.photos as Any]
+                    )
+                
+            case .failure(_):
+                AppLogger.error("Ошибка получения фотографий")
             }
             self?.task = nil
         }
@@ -86,3 +96,4 @@ final class ImageListService {
         )
     }
 }
+
