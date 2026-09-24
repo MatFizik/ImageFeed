@@ -22,6 +22,10 @@ final class ImageListService {
     
     private var lastLoadedPage: Int?
     
+    func clearPhotosData() {
+        photos.removeAll()
+    }
+    
     // MARK: -GetRequestFetchPhotosNextPage
     func fetchPhotosNextPage() {
         guard fetchPhotosTask?.state != .running else {return}

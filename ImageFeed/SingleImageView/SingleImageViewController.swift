@@ -26,11 +26,11 @@ final class SingleImageViewController: UIViewController {
     
     private func showImage() {
         guard let largeImageUrl else { return }
-        shareButton.isEnabled = false
+        shareButton.isHidden = true
         view.layoutIfNeeded()
-            scrollView.zoomScale = 1
-            imageView.contentMode = .center
-            imageView.frame = CGRect(origin: .zero, size: scrollView.bounds.size)
+        scrollView.zoomScale = 1
+        imageView.contentMode = .center
+        imageView.frame = CGRect(origin: .zero, size: scrollView.bounds.size)
         
         UIBlockingProgressHUD.show()
         imageView.kf.setImage(with: URL(string: largeImageUrl),
@@ -41,7 +41,7 @@ final class SingleImageViewController: UIViewController {
             
             switch result {
             case .success(let imageResult):
-                shareButton.isEnabled = true
+                shareButton.isHidden = true
                 self.rescaleAndCenterImageInScrollView(image: imageResult.image)
             case .failure:
                 self.showError()

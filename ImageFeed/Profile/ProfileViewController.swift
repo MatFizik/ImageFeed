@@ -14,6 +14,8 @@ final class ProfileViewController: UIViewController {
     
     var profileViewModel: ProfileViewModel?
     
+    let profileLogoutService = ProfileLogoutService.shared
+    
     private var profileImageServiceObserver: NSObjectProtocol?
     
     private lazy var nameLabel: UILabel = {
@@ -43,6 +45,7 @@ final class ProfileViewController: UIViewController {
         button.setImage(UIImage(named: "Exit"), for: .normal)
         button.tintColor = .ypRed
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(didTapExitButton), for: .touchUpInside)
         return button
     }()
     private lazy var avatarImageView: UIImageView = {
@@ -70,6 +73,25 @@ final class ProfileViewController: UIViewController {
                 self.updateAvatar()
             }
         updateAvatar()
+    }
+    
+    @objc private func didTapExitButton() {
+        let alert = UIAlertController(
+            title: "Пока, пока!",
+            message: "Уверены, что хотите выйти?",
+            preferredStyle: .alert
+        )
+        alert.addAction(.init(title: "Да", style: .default, handler: { _ in
+            self.profileLogoutService.logout()
+            
+            guard let window = UIApplication.shared
+                .connectedScenes
+                .compactMap({($0 as? UIWindowScene)?.keyWindow}).first else { return }
+            window.rootViewController = SplashViewController()
+
+        }))
+        alert.addAction(.init(title: "Нет", style: .default, handler: nil))
+        present(alert, animated: true)
     }
     
     private func updateAvatar() {

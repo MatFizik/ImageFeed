@@ -33,6 +33,10 @@ final class ProfileImageService {
     private(set) var avatarURL: String?
 
     private var task: URLSessionTask?
+    
+    func clearAvatarUrl() {
+        avatarURL = nil
+    }
 
     // Метод для получения аватарки по имени пользователя
     func fetchProfileImageURL(username: String, completion: @escaping (Result<String, Error>) -> Void) {
