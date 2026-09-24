@@ -151,7 +151,9 @@ extension ImagesListViewController: ImagesListCellDelegate {
             switch result{
                 case .success:
                 self.photos = self.imageListService.photos
-                cell.setIsLiked(isLiked: photo.isLiked)
+                if let index = self.photos.firstIndex(where: { $0.id == photo.id }) {
+                        cell.setIsLiked(isLiked: self.photos[index].isLiked)
+                    }
                 UIBlockingProgressHUD.dismiss()
                 case .failure:
                 UIBlockingProgressHUD.dismiss()
