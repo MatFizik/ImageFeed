@@ -70,22 +70,22 @@ final class ImageListService {
             switch result {
             case .success:
                 if let index = self.photos.firstIndex(where: { $0.id == photoId }) {
-                   let photo = self.photos[index]
-                   let newPhoto = PhotoViewModel(
-                            id: photo.id,
-                            size: photo.size,
-                            createdAt: photo.createdAt,
-                            welcomeDescription: photo.welcomeDescription,
-                            thumbImageURL: photo.thumbImageURL,
-                            largeImageURL: photo.largeImageURL,
-                            isLiked: !photo.isLiked
-                        )
+                    let photo = self.photos[index]
+                    let newPhoto = PhotoViewModel(
+                        id: photo.id,
+                        size: photo.size,
+                        createdAt: photo.createdAt,
+                        welcomeDescription: photo.welcomeDescription,
+                        thumbImageURL: photo.thumbImageURL,
+                        largeImageURL: photo.largeImageURL,
+                        isLiked: !photo.isLiked
+                    )
                     self.photos = self.photos.withReplaced(itemAt: index, newValue: newPhoto)
                 }
                 completion(.success(()))
             case .failure(let error):
                 AppLogger.error("Ошибка в методе changeLike", metadata: ["from":"ImageListService","Error": "\(error)"])
-                    completion(.failure(error))
+                completion(.failure(error))
             }
             self.likeTask = nil
         }
