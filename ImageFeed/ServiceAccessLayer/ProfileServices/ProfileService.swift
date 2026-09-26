@@ -17,6 +17,10 @@ final class ProfileService {
     
     private(set) var profileViewModel: ProfileViewModel?
     
+    func clearProfileData() {
+        profileViewModel = nil
+    }
+    
     private init() {}
     
     //MARK: -Запрос за базовой инфой профиля
@@ -68,3 +72,4 @@ final class ProfileService {
         )
     }
 }
+
