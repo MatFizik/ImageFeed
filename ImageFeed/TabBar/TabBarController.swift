@@ -9,6 +9,17 @@ import UIKit
 
 final class TabBarController: UITabBarController {
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        let appearance = UITabBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = .ypBlack
+
+        tabBar.standardAppearance = appearance
+        tabBar.scrollEdgeAppearance = appearance
+    }
+    
     override func awakeFromNib() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let imageListViewController = storyboard.instantiateViewController(withIdentifier: "ImagesListViewController")

@@ -7,8 +7,8 @@
 
 struct ProfileResponseModel: Codable {
     let username: String
-    let firstName: String
-    let lastName: String
+    let firstName: String?
+    let lastName: String?
     let bio: String?
     
     private enum CodingKeys: String, CodingKey {

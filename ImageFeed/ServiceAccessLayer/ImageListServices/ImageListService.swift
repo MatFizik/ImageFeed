@@ -10,7 +10,7 @@ import SwiftKeychainWrapper
 internal import CoreGraphics
 
 final class ImageListService {
-    static var shared = ImageListService()
+    static let shared = ImageListService()
     private init() {}
     
     private var fetchPhotosTask: URLSessionTask?

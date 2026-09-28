@@ -110,7 +110,6 @@ final class ProfileViewController: UIViewController & ProfileViewControllerProto
                 .processor(processor),
                 .scaleFactor(UIScreen.main.scale),
                 .cacheOriginalImage,
-                .forceRefresh
             ]) { result in
                 
                 switch result {

@@ -62,9 +62,10 @@ extension URLSession {
         let task = data(for: request) { (result: Result<Data, Error>) in
             switch result {
             case .success(let data):
-                if let jsonString = String(data: data, encoding: .utf8) {
-                    AppLogger.info("Полученные данные", metadata: ["from": "objectTask", "Data": jsonString])
-                }
+                AppLogger.info(
+                    "Ответ API успешно получен",
+                    metadata: ["bytes": "\(data.count)"]
+                )
                 do {
                     let decodedObject = try decoder.decode(T.self, from: data)
                     completion(.success(decodedObject))

@@ -9,7 +9,7 @@ import Foundation
 import SwiftKeychainWrapper
 
 final class ProfileService {
-    static var shared = ProfileService()
+    static let shared = ProfileService()
     
     private var task: URLSessionTask?
     
