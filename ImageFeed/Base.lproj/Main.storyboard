@@ -44,6 +44,7 @@
                             </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xgE-Mw-6tc">
                                 <rect key="frame" x="16" y="656" width="382" height="48"/>
+                                <accessibility key="accessibilityConfiguration" identifier="Authenticate"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="48" id="ajG-4T-pyx"/>
                                 </constraints>
@@ -89,6 +90,7 @@
                         <subviews>
                             <wkWebView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="C0d-iG-q2I">
                                 <rect key="frame" x="0.0" y="150" width="414" height="746"/>
+                                <accessibility key="accessibilityConfiguration" identifier="UnsplashWebView"/>
                                 <color key="backgroundColor" name="YP White"/>
                                 <wkWebViewConfiguration key="configuration">
                                     <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
@@ -254,6 +256,7 @@
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Kvv-UG-eXv" userLabel="BackButton">
                                 <rect key="frame" x="20" y="48" width="24" height="24"/>
+                                <accessibility key="accessibilityConfiguration" identifier="nav back button white"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="24" id="csL-CK-oM0"/>
                                     <constraint firstAttribute="width" constant="24" id="nrp-Bm-jvE"/>
