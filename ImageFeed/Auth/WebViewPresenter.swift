@@ -23,7 +23,6 @@ final class WebViewPresenter: WebViewPresenterProtocol {
         self.authHelper = authHelper
     }
 
-    // Изолированный deinit (по умолчанию из-за MainActor) при deployment target 17.0 падает в тестах: malloc "pointer being freed was not allocated"
     nonisolated deinit {}
 
     func viewDidLoad() {
