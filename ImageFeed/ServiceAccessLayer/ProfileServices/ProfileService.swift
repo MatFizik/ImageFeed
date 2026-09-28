@@ -51,13 +51,14 @@ final class ProfileService {
     
     //MARK: -Сборка реквеста
     private func makeRequest() -> URLRequest? {
-        let uRLComponents = URLComponents(string: "\(Constants.defaultBaseURLString)/me")
+        let authConfig = AuthConfiguration.standard
+        let uRLComponents = URLComponents(string: "\(authConfig.defaultBaseURLString)/me")
         guard let url = uRLComponents?.url else {
             return nil
         }
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = HTTPMethod.get.rawValue
-        guard let accessToken = KeychainWrapper.standard.string(forKey: Constants.keyAccessToken) else { return nil }
+        guard let accessToken = KeychainWrapper.standard.string(forKey: authConfig.keyAccessToken) else { return nil }
         urlRequest.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         return urlRequest
     }

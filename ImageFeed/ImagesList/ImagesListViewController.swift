@@ -63,16 +63,20 @@ final class ImagesListViewController: UIViewController {
     private func updateTableViewAnimated() {
         let oldCount = photos.count
         let newCount = imageListService.photos.count
-        photos = imageListService.photos
-        
-        if oldCount != newCount {
-            tableView.performBatchUpdates {
-                let indexPaths = (oldCount..<newCount).map { i in
-                    IndexPath(row: i , section: 0)
-                }
-                tableView.insertRows(at: indexPaths, with: .automatic)
-            } completion: { _ in }
+
+        guard newCount > oldCount else {
+            photos = imageListService.photos
+            tableView.reloadData()
+            return
         }
+
+        tableView.performBatchUpdates {
+            photos = imageListService.photos
+            let indexPaths = (oldCount..<newCount).map { i in
+                IndexPath(row: i , section: 0)
+            }
+            tableView.insertRows(at: indexPaths, with: .automatic)
+        } completion: { _ in }
     }
 }
 

@@ -48,7 +48,7 @@ final class OAuth2Service {
                 
                 switch result {
                 case .success(let body):
-                    let isSuccess = KeychainWrapper.standard.set(body.accessToken, forKey: Constants.keyAccessToken)
+                    let isSuccess = KeychainWrapper.standard.set(body.accessToken, forKey: AuthConfiguration.standard.keyAccessToken)
                     guard isSuccess else {
                         AppLogger.error("Keychain save error", metadata: ["metadataKey": "fetchOAuthToken"])
                         return
@@ -72,10 +72,11 @@ final class OAuth2Service {
             print("[OAuth2Service.makeTokenRequest]: invalidRequest - не удалось создать URLComponents из строки \(OAuth2Constants.tokenURL)")
             return nil
         }
+        let authConfig = AuthConfiguration.standard
         urlComponents.queryItems = [
-            URLQueryItem(name: "client_id", value: Constants.accessKey),
-            URLQueryItem(name: "client_secret", value: Constants.secretKey),
-            URLQueryItem(name: "redirect_uri", value: Constants.redirectURI),
+            URLQueryItem(name: "client_id", value: authConfig.accessKey),
+            URLQueryItem(name: "client_secret", value: authConfig.secretKey),
+            URLQueryItem(name: "redirect_uri", value: authConfig.redirectURI),
             URLQueryItem(name: "code", value: code),
             URLQueryItem(name: "grant_type", value: "authorization_code")
         ]

@@ -101,8 +101,9 @@ final class ImageListService {
     
     // MARK: -MakeRequestChangeLike
     private func makeRequestChangeLike(_ photoId: String, _ isDelete: Bool) -> URLRequest? {
+        let authConfig = AuthConfiguration.standard
         guard let urlComponents = URLComponents(string:
-                                                    "\(Constants.defaultBaseURLString)/photos/\(photoId)/like") else {
+                                                    "\(authConfig.defaultBaseURLString)/photos/\(photoId)/like") else {
             AppLogger.error("Ошибка формирования URLComponents", metadata: ["from":"makeRequestChangeLike"], category: LogCategory.request)
             return nil
         }
@@ -114,7 +115,7 @@ final class ImageListService {
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = isDelete ? HTTPMethod.delete.rawValue : HTTPMethod.post.rawValue
         
-        guard let accessToken = KeychainWrapper.standard.string(forKey: Constants.keyAccessToken) else {
+        guard let accessToken = KeychainWrapper.standard.string(forKey: authConfig.keyAccessToken) else {
             AppLogger.error("Ошибка при получении токена", metadata: ["from":"makeRequestFetchPhotosNextPage"], category: LogCategory.request)
             return nil}
         
@@ -125,7 +126,8 @@ final class ImageListService {
     
     // MARK: -MakeRequestFetchPhotosNextPage
     private func makeRequestFetchPhotosNextPage(_ page: Int) -> URLRequest? {
-        guard var urlComponents = URLComponents(string: "\(Constants.defaultBaseURLString)/photos") else {
+        let authConfig = AuthConfiguration.standard
+        guard var urlComponents = URLComponents(string: "\(authConfig.defaultBaseURLString)/photos") else {
             AppLogger.error("Ошибка формирования URLComponents", metadata: ["from":"makeRequestFetchPhotosNextPage"], category: LogCategory.request)
             return nil
         }
@@ -142,7 +144,7 @@ final class ImageListService {
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = HTTPMethod.get.rawValue
         
-        guard let accessToken = KeychainWrapper.standard.string(forKey: Constants.keyAccessToken) else {
+        guard let accessToken = KeychainWrapper.standard.string(forKey: authConfig.keyAccessToken) else {
             AppLogger.error("Ошибка при получении токена", metadata: ["from":"makeRequestFetchPhotosNextPage"], category: LogCategory.request)
             return nil}
         
