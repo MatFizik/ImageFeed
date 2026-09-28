@@ -67,7 +67,7 @@ final class ProfileService {
     private func convert(model: ProfileResponseModel) -> ProfileViewModel {
         ProfileViewModel(
             username: model.username,
-            name: "\(model.firstName) \(model.lastName)",
+            name: "\(model.firstName ?? "") \(model.lastName ?? "")",
             login: "@\(model.username)",
             bio: model.bio
         )
