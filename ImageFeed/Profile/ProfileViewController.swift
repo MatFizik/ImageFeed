@@ -8,15 +8,17 @@ import UIKit
 import Kingfisher
 import Logging
 
-final class ProfileViewController: UIViewController {
+public protocol ProfileViewControllerProtocol: AnyObject {
+    var presenter: ProfileViewPresenterProtocol? { get set }
+    func updateProfileDetails(name: String, login: String, bio: String?)
+    func updateAvatar(url: URL)
+    func switchToSplashScreen()
+}
+
+
+final class ProfileViewController: UIViewController & ProfileViewControllerProtocol {
     
-    let profileService = ProfileService.shared
-    
-    var profileViewModel: ProfileViewModel?
-    
-    let profileLogoutService = ProfileLogoutService.shared
-    
-    private var profileImageServiceObserver: NSObjectProtocol?
+    var presenter: ProfileViewPresenterProtocol?
     
     private lazy var nameLabel: UILabel = {
         let nameLabel = UILabel()
@@ -44,6 +46,7 @@ final class ProfileViewController: UIViewController {
         let button = UIButton(type: .system)
         button.setImage(UIImage(named: "Exit"), for: .normal)
         button.tintColor = .ypRed
+        button.accessibilityIdentifier = "logout button"
         button.translatesAutoresizingMaskIntoConstraints = false
         button.addTarget(self, action: #selector(didTapExitButton), for: .touchUpInside)
         return button
@@ -59,20 +62,10 @@ final class ProfileViewController: UIViewController {
         
         view.backgroundColor = .ypBlack
         
-        requestForProfile()
         addSubviews()
         setupConstraints()
         
-        profileImageServiceObserver = NotificationCenter.default
-            .addObserver(
-                forName: ProfileImageService.didChangeNotification,
-                object: nil,
-                queue: .main
-            ) { [weak self] _ in
-                guard let self = self else { return }
-                self.updateAvatar()
-            }
-        updateAvatar()
+        presenter?.viewDidLoad()
     }
     
     @objc private func didTapExitButton() {
@@ -81,24 +74,27 @@ final class ProfileViewController: UIViewController {
             message: "Уверены, что хотите выйти?",
             preferredStyle: .alert
         )
-        alert.addAction(.init(title: "Да", style: .default, handler: { _ in
-            self.profileLogoutService.logout()
-            
-            guard let window = UIApplication.shared
-                .connectedScenes
-                .compactMap({($0 as? UIWindowScene)?.keyWindow}).first else { return }
-            window.rootViewController = SplashViewController()
-
+        alert.addAction(.init(title: "Да", style: .default, handler: { [weak self] _ in
+            self?.presenter?.didConfirmLogout()
         }))
         alert.addAction(.init(title: "Нет", style: .default, handler: nil))
         present(alert, animated: true)
     }
     
-    private func updateAvatar() {
-        guard
-            let profileImageURL = ProfileImageService.shared.avatarURL,
-            let imageUrl = URL(string: profileImageURL)
-        else { return }
+    func updateProfileDetails(name: String, login: String, bio: String?) {
+        nameLabel.text = name
+        loginLabel.text = login
+        descriptionLabel.text = bio
+    }
+    
+    func switchToSplashScreen() {
+        guard let window = UIApplication.shared
+            .connectedScenes
+            .compactMap({($0 as? UIWindowScene)?.keyWindow}).first else { return }
+        window.rootViewController = SplashViewController()
+    }
+    
+    func updateAvatar(url imageUrl: URL) {
         AppLogger.info("imageUrl: \(imageUrl)")
         
         let placeholderImage = UIImage(systemName: "person.circle.fill")?
@@ -114,7 +110,6 @@ final class ProfileViewController: UIViewController {
                 .processor(processor),
                 .scaleFactor(UIScreen.main.scale),
                 .cacheOriginalImage,
-                .forceRefresh
             ]) { result in
                 
                 switch result {
@@ -131,15 +126,6 @@ final class ProfileViewController: UIViewController {
                                                "error": "\(error.localizedDescription)"])
                 }
             }
-    }
-    
-    
-    private func requestForProfile() {
-        if let profile = ProfileService.shared.profileViewModel {
-            self.nameLabel.text = profile.name
-            self.descriptionLabel.text = profile.bio
-            self.loginLabel.text = profile.login
-        }
     }
     
     

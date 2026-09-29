@@ -42,7 +42,7 @@ final class ProfileImageService {
     func fetchProfileImageURL(username: String, completion: @escaping (Result<String, Error>) -> Void) {
         task?.cancel()
 
-        guard let token = KeychainWrapper.standard.string(forKey: Constants.keyAccessToken) else {
+        guard let token = KeychainWrapper.standard.string(forKey: AuthConfiguration.standard.keyAccessToken) else {
             completion(.failure(NSError(domain: "ProfileImageService", code: 401, userInfo: [NSLocalizedDescriptionKey: "Authorization token missing"])))
             return
         }

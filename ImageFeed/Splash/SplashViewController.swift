@@ -21,7 +21,7 @@ final class SplashViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        if KeychainWrapper.standard.string(forKey: Constants.keyAccessToken) != nil {
+        if KeychainWrapper.standard.string(forKey: AuthConfiguration.standard.keyAccessToken) != nil {
             fetchProfile()
         } else {
             presentAuthViewController()

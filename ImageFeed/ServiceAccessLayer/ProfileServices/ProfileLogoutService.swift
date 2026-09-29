@@ -18,7 +18,7 @@ final class ProfileLogoutService {
     let imageListService = ImageListService.shared
     
     func logout() {
-        KeychainWrapper.standard.remove(forKey: KeychainWrapper.Key(rawValue: Constants.keyAccessToken))
+        KeychainWrapper.standard.remove(forKey: KeychainWrapper.Key(rawValue: AuthConfiguration.standard.keyAccessToken))
         profileService.clearProfileData()
         profileImageService.clearAvatarUrl()
         imageListService.clearPhotosData()
